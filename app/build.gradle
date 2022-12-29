@@ -9,8 +9,8 @@ android {
         applicationId "github.umer0586.smsserver"
         minSdk 21
         targetSdk 33
-        versionCode 16
-        versionName "3.2.0"
+        versionCode 17
+        versionName "3.3.0"
 
 
     }
@@ -50,4 +50,7 @@ dependencies {
 
     //Rxpermissions
     implementation 'com.github.tbruyelle:rxpermissions:0.12'
+
+    //app crash reporting lib
+    implementation "ch.acra:acra-mail:5.9.7"
 }
