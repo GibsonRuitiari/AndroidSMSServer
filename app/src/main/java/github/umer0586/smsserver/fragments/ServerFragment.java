@@ -3,6 +3,7 @@ package github.umer0586.smsserver.fragments;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.text.Html;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -80,6 +82,21 @@ public class ServerFragment extends Fragment implements ServiceConnection, SMSSe
         cardView = view.findViewById(R.id.card_view);
 
         appSettings = new AppSettings(getContext());
+
+
+        AppCompatTextView donationText = view.findViewById(R.id.donationText);
+        donationText.setOnClickListener(v->{
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            if(intent.resolveActivity(getContext().getPackageManager()) != null)
+            {
+                intent.setData(Uri.parse("http://www.buymeacoffee.com/umerfarooq"));
+                startActivity(Intent.createChooser(intent,"Select Browser"));
+            }
+            else
+            {
+                Toast.makeText(getContext(),"Browser app not found",Toast.LENGTH_SHORT).show();
+            }
+        });
 
 
         hidePulseAnimation();
