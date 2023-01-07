@@ -6,9 +6,9 @@ import android.content.SharedPreferences;
 import github.umer0586.smsserver.R;
 
 /*
-* Since we can't save context in static field therefore client must create new object of this
-* class to gain access to shared preferences. Multiple objects of AppSettings point to same shared preferences
-* */
+ * Since we can't save context in static field therefore client must create new object of this
+ * class to gain access to shared preferences. Multiple objects of AppSettings point to same shared preferences
+ * */
 
 public class AppSettings {
 
@@ -19,7 +19,7 @@ public class AppSettings {
     public AppSettings(Context context)
     {
         this.context = context;
-        sharedPreferences = context.getApplicationContext().getSharedPreferences(context.getString(R.string.shared_pref_file), context.getApplicationContext().MODE_PRIVATE);
+        sharedPreferences = context.getApplicationContext().getSharedPreferences(context.getString(R.string.shared_pref_file), Context.MODE_PRIVATE);
     }
 
     public int getPortNo()
@@ -46,37 +46,33 @@ public class AppSettings {
     {
         sharedPreferences.edit()
                 .putString(context.getString(R.string.pref_key_password),password)
-                .commit();
+                .apply();
     }
 
     public void savePortNo(int portNo)
     {
         sharedPreferences.edit()
                 .putInt(context.getString(R.string.pref_key_port_no),portNo)
-                .commit();
+                .apply();
     }
 
     public void secureConnection(boolean state)
     {
-        sharedPreferences.edit()
-                .putBoolean(context.getString(R.string.pref_key_secure_connection),state)
-                .commit();
+        saveBoolean(context.getString(R.string.pref_key_secure_connection),state);
     }
 
     public void enablePassword(boolean state)
     {
-        sharedPreferences.edit()
-                .putBoolean(context.getString(R.string.pref_key_password_switch), state)
-                .commit();
+        saveBoolean(context.getString(R.string.pref_key_password_switch),state);
     }
 
     public void enableHotspotOption(boolean state)
     {
-        sharedPreferences.edit()
-                .putBoolean(context.getString(R.string.pref_key_hotspot), state)
-                .commit();
+        saveBoolean(context.getString(R.string.pref_key_hotspot),state);
     }
-
+    private void saveBoolean(String key, boolean value){
+        sharedPreferences.edit().putBoolean(key,value).apply();
+    }
     public boolean isHotspotOptionEnabled()
     {
         return sharedPreferences.getBoolean(context.getString(R.string.pref_key_hotspot), false);

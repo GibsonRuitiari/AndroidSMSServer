@@ -13,6 +13,7 @@ import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import java.io.IOException;
@@ -85,6 +86,7 @@ public class SMSService extends Service implements MessageReceiver.MessageListen
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
@@ -260,12 +262,12 @@ public class SMSService extends Service implements MessageReceiver.MessageListen
     }
 
     /*
-    * For Android 8 and above there is a framework restriction which required service.startForeground()
-    * method to be called within five seconds after call to Context.startForegroundService()
-    * so make sure we call this method even if we are returning from service.onStartCommand() without calling
-    * service.startForeground()
-    *
-    * */
+     * For Android 8 and above there is a framework restriction which required service.startForeground()
+     * method to be called within five seconds after call to Context.startForegroundService()
+     * so make sure we call this method even if we are returning from service.onStartCommand() without calling
+     * service.startForeground()
+     *
+     * */
     private void handleAndroid8andAbove()
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)

@@ -38,7 +38,7 @@ public class IpUtil {
 
     public static String getHotspotIPAddress(Context context) {
 
-        if(WifiUtil.isHotspotEnabled(context) == false)
+        if(!WifiUtil.isHotspotEnabled(context))
             return null;
 
         String ipAddress = null;

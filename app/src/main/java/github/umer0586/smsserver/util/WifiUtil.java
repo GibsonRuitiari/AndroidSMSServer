@@ -10,8 +10,8 @@ public class WifiUtil {
 
     public static boolean isHotspotEnabled(Context context)
     {
-        WifiManager wifi = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        Method[] wmMethods = wifi.getClass().getDeclaredMethods();
+        WifiManager wifi = createWifiManagerInstance(context);
+        Method[] wmMethods =wifi.getClass().getDeclaredMethods();
 
         //is wifi access point (hotspot) enabled
         boolean isWifiAPenabled = false;
@@ -37,8 +37,10 @@ public class WifiUtil {
 
     public static boolean isWifiEnabled(Context context)
     {
-        WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        return wifiManager.isWifiEnabled();
+        return createWifiManagerInstance(context).isWifiEnabled();
+    }
+    private static WifiManager createWifiManagerInstance(Context context){
+        return (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
     }
 
 

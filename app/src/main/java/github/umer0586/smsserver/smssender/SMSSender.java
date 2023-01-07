@@ -7,11 +7,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.telephony.SmsManager;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.concurrent.futures.CallbackToFutureAdapter;
 
 import java.lang.reflect.Field;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 
 public class SMSSender {
@@ -29,7 +34,7 @@ public class SMSSender {
      * @param message text to send
      * @return SMSResult
      */
-    public static SMSResult sendSMS(@NonNull Context context,@NonNull final String phone , @NonNull final String message)
+    public static SMSResult sendSMS(@NonNull Context context, @NonNull final String phone , @NonNull final String message)
     {
         // always declare local
         final SMSResult smsResult = new SMSResult();
@@ -50,7 +55,7 @@ public class SMSSender {
         // The raw pdu of the status report is in the extended data ("pdu").
         // from android 4.4 this intent is only broadcast to default sms app
 
-       // PendingIntent deliveredPI = PendingIntent.getBroadcast(this.context, 0, new Intent(DELIVERED), 0);
+        // PendingIntent deliveredPI = PendingIntent.getBroadcast(this.context, 0, new Intent(DELIVERED), 0);
 
         context.registerReceiver(new BroadcastReceiver(){
             @Override
@@ -75,21 +80,20 @@ public class SMSSender {
         }, new IntentFilter(SENT));
 
 
-
         /*
-        * From Android official documentation https://developer.android.com/about/versions/kitkat/android-4.4#SMS
-        * Beginning with Android 4.4, the system settings allow users to select a "default SMS app." Once selected, only the
-        * default SMS app is able to write to the SMS Provider and only the default SMS app
-        * receives the SMS_DELIVER_ACTION broadcast when the user receives an SMS
-        *
-        * More from Android official docs https://developer.android.com/reference/android/provider/Telephony.Sms.Intents#SMS_DELIVER_ACTION
-        * SMS_DELIVER_ACTION
-        * This intent will only be delivered to the default sms app.
-        *
-        * So our Android SMS server app (non default sms app) has no way to get report whether sms successfully delivered or not
-        * only the app can report whether sms was successfully sent or not
-        *
-        * */
+         * From Android official documentation https://developer.android.com/about/versions/kitkat/android-4.4#SMS
+         * Beginning with Android 4.4, the system settings allow users to select a "default SMS app." Once selected, only the
+         * default SMS app is able to write to the SMS Provider and only the default SMS app
+         * receives the SMS_DELIVER_ACTION broadcast when the user receives an SMS
+         *
+         * More from Android official docs https://developer.android.com/reference/android/provider/Telephony.Sms.Intents#SMS_DELIVER_ACTION
+         * SMS_DELIVER_ACTION
+         * This intent will only be delivered to the default sms app.
+         *
+         * So our Android SMS server app (non default sms app) has no way to get report whether sms successfully delivered or not
+         * only the app can report whether sms was successfully sent or not
+         *
+         * */
 
 /*        this.context.registerReceiver(new BroadcastReceiver(){
             @Override
@@ -116,13 +120,10 @@ public class SMSSender {
             }
         }, new IntentFilter(DELIVERED));*/
 
-        // TODO : https://developer.android.com/reference/android/telephony/SmsManager#getDefault()
-        SmsManager smsManager = SmsManager.getDefault();
-
+        // SmsManager.getDefault() does not work on >= api S
+        SmsManager smsManager =  getSmsManagerInstance(context);
         try{
-
             smsManager.sendTextMessage(phone, null, message, sentPI, null); // whether we pass delieveredPI or null delivery will never be reported by android os to this app :(
-
             synchronized (lock)
             {
                 lock.wait(); // wait here until some other thread call lock.notify()
@@ -130,7 +131,6 @@ public class SMSSender {
 
         }catch(Exception e){
             e.printStackTrace();
-
             smsResult.setStatus(SMSResult.STATUS_EXCEPTION_OCCURRED);
             smsResult.setReason(e.getMessage());
 
@@ -159,6 +159,15 @@ public class SMSSender {
         }
 
         return null;
+    }
+    private static SmsManager getSmsManagerInstance(Context context){
+        SmsManager smsManager;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            smsManager=context.getSystemService(SmsManager.class);
+        }else{
+            smsManager= SmsManager.getDefault();
+        }
+        return smsManager;
     }
 
 }

@@ -21,8 +21,6 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager2 viewPager;
     private MyFragmentStateAdapter myFragmentStateAdapter;
     private TabLayout tabLayout;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -37,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(myFragmentStateAdapter);
 
         new TabLayoutMediator(tabLayout,viewPager, (tab,position)->{
-
             if(position == 0)
                 tab.setText("Server");
             else if(position == 1)
@@ -54,22 +51,22 @@ public class MainActivity extends AppCompatActivity {
         {
             super(fragmentActivity);
         }
-
+        /*Create fragment does not allow non-null returns so throw */
         @NonNull
         @Override
         public Fragment createFragment(int position)
         {
+
             switch(position)
             {
                 case 0:
                     return new ServerFragment();
                 case 1:
                     return new SettingsFragment();
+                default:
+                    throw new IllegalArgumentException("no fragment associated with the position" + position);
             }
-
-            return null;
         }
-
         @Override
         public int getItemCount()
         {
